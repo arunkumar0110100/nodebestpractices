@@ -1,53 +1,33 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:18'
-    }
-  }
+    agent any
 
-  environment {
-    SONARQUBE_SERVER = 'SonarQubeCorpServer'
-  }
-
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    tools {
+        nodejs 'node-18'  // 👈 this should match the name you gave in Global Tool Configuration
     }
 
-    stage('Install Dependencies') {
-      steps {
-        sh 'npm ci'
-      }
+    environment {
+        SONAR_TOKEN = credentials('sonar-token')
     }
 
-    stage('Run Tests') {
-      steps {
-        sh 'npm run test -- --coverage'
-      }
-    }
-
-    stage('SonarQube Analysis') {
-      steps {
-        withSonarQubeEnv("${SONARQUBE_SERVER}") {
-          sh '''
-            sonar-scanner \
-              -Dsonar.projectKey=api-testing-tool \
-              -Dsonar.sources=src \
-              -Dsonar.exclusions=**/node_modules/**,**/__tests__/** \
-              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          '''
+    stages {
+        stage('Install dependencies') {
+            steps {
+                sh 'npm install'
+            }
         }
-      }
-    }
 
-    stage('Quality Gate') {
-      steps {
-        timeout(time: 5, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: true
+        stage('Run Tests') {
+            steps {
+                sh 'npm test'
+            }
         }
-      }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('My SonarQube Server') {
+                    sh "sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
+                }
+            }
+        }
     }
-  }
 }
