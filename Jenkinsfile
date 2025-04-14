@@ -16,12 +16,16 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('My SonarQube Server') { // Installation name from Jenkins config
-                    sh "sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
-                }
-            }
-        }
+        withSonarQubeEnv('My SonarQube Server') {
+  withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+    sh """
+      sonar-scanner \
+      -Dsonar.login=$SONAR_TOKEN \
+      -Dsonar.projectKey=test \
+      -Dsonar.sources=.
+    """
+  }
+}
+
     }
 }
