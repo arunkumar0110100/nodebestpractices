@@ -3,7 +3,6 @@ pipeline {
 
     tools {
         nodejs 'node-18'            // Matches Global Tool Configuration
-        sonarScanner 'SonarScanner' // 👈 Add this line
     }
 
     environment {
