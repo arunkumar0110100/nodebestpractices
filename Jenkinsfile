@@ -2,11 +2,12 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'node-18'  // 👈 this should match the name you gave in Global Tool Configuration
+        nodejs 'node-18'            // Matches Global Tool Configuration
+        sonarQubeScanner 'SonarScanner' // 👈 Add this line
     }
 
     environment {
-        SONAR_TOKEN = credentials('sonar-token')
+        SONAR_TOKEN = credentials('sonar-token') // From Jenkins credentials
     }
 
     stages {
@@ -16,10 +17,9 @@ pipeline {
             }
         }
 
-
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('My SonarQube Server') {
+                withSonarQubeEnv('My SonarQube Server') { // Installation name from Jenkins config
                     sh "sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
                 }
             }
