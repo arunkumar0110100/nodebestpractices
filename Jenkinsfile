@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         nodejs 'node-18'            // Matches Global Tool Configuration
-        sonarQubeScanner 'SonarScanner' // 👈 Add this line
+        hudson.plugins.sonar.SonarRunnerInstallation 'SonarScanner' // 👈 Add this line
     }
 
     environment {
