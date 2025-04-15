@@ -23,7 +23,7 @@ pipeline {
                         sh '''
                           sonar-scanner \
                           -Dsonar.login=$SONAR_TOKEN \
-                          -Dsonar.projectKey=test \
+                          -Dsonar.projectKey=dev-piedap \
                           -Dsonar.sources=.
                         '''
                     }
